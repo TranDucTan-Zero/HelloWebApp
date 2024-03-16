@@ -1,0 +1,4 @@
+com\cgm\hello_web_app\dao\ProductDAO.class
+com\cgm\hello_web_app\eitities\Product.class
+com\cgm\hello_web_app\restful\ProdductServiceAPI.class
+com\cgm\hello_web_app\controller\IndexController.class
