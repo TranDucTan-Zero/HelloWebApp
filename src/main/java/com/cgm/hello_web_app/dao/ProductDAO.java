@@ -11,8 +11,19 @@ import com.cgm.hello_web_app.eitities.Product;
 
 public class ProductDAO {
     
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String url = "jdbc:mysql://localhost:3306/webapp";
+    private String user = "root";
+    private String password = "@Trantan24";
+
     public ArrayList<Product> getLatestProductList() {
-        String url, user, password;
         Connection conn = null;
         String sql = null;
         PreparedStatement pst = null;
@@ -20,10 +31,6 @@ public class ProductDAO {
         ArrayList<Product> list = new ArrayList<>();
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            url = "jdbc:mysql://localhost:3306/webapp";
-            user = "root";
-            password = "@Trantan24";
             conn = DriverManager.getConnection(url, user, password);
 
             sql = "select * from product";
@@ -39,7 +46,7 @@ public class ProductDAO {
                 Product product = new Product(id, image, name, price);
                 list.add(product);
             } 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -62,7 +69,7 @@ public class ProductDAO {
     
     public boolean addProduct(Product product) {
         String sql = "INSERT INTO product (image, name, price) VALUES (?, ?, ?)";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/webapp", "root", "@Trantan24");
+        try (Connection conn = DriverManager.getConnection(url, user, password);
              PreparedStatement pst = conn.prepareStatement(sql)) {
     
             pst.setString(1, product.getImage());
@@ -80,7 +87,7 @@ public class ProductDAO {
     // Phương thức cập nhật thông tin của một sản phẩm trong cơ sở dữ liệu
     public boolean updateProduct(int id, Product product) {
         String sql = "UPDATE product SET image=?, name=?, price=? WHERE id=?";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/webapp", "root", "@Trantan24");
+        try (Connection conn = DriverManager.getConnection(url, user, password);
              PreparedStatement pst = conn.prepareStatement(sql)) {
 
             pst.setString(1, product.getImage());
@@ -99,7 +106,7 @@ public class ProductDAO {
     // Phương thức xóa một sản phẩm khỏi cơ sở dữ liệu dựa trên ID
     public boolean deleteProduct(int id) {
         String sql = "DELETE FROM product WHERE id=?";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/webapp", "root", "@Trantan24");
+        try (Connection conn = DriverManager.getConnection(url, user, password);
              PreparedStatement pst = conn.prepareStatement(sql)) {
 
             pst.setInt(1, id);
@@ -111,19 +118,4 @@ public class ProductDAO {
             return false;
         }
     }
-
-
-    public static void main(String[] args) {
-        ProductDAO productDAO = new ProductDAO();
-        productDAO.getLatestProductList();
-        // Cập nhật thông tin của sản phẩm có ID là 1
-        Product updatedProduct = new Product(3, "updated_image.jpg", "Updated Product", 129.99);
-        boolean updated = productDAO.updateProduct(5, updatedProduct);
-        System.out.println("Product updated: " + updated);
- 
-       
-    }
 }
-
-
-
